@@ -1,0 +1,73 @@
+.kas-row {
+    margin: 20px 0;
+}
+
+.kas-row-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 10px;
+}
+
+.kas-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.kas-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.kas-btn:hover {
+    opacity: 0.85;
+}
+
+.kas-btn:active {
+    transform: scale(0.97);
+}
+
+/* Button shape variants */
+.kas-style-pill .kas-btn {
+    border-radius: 999px;
+}
+
+.kas-style-rounded .kas-btn {
+    border-radius: 8px;
+}
+
+.kas-style-square .kas-btn {
+    border-radius: 0;
+}
+
+/* Copy link button keeps a neutral color regardless of theme */
+.kas-btn-copy {
+    background: #374151;
+}
+
+.kas-btn-copy.kas-copied {
+    background: #16a34a;
+}
+
+@media (max-width: 480px) {
+    .kas-buttons {
+        gap: 8px;
+    }
+    .kas-btn {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+}
