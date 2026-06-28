@@ -6,6 +6,19 @@ A WordPress plugin that adds **AI Summarize** buttons and **Social Share** butto
 
 ---
 
+## Screenshots
+
+### Live Post — Buttons on a Real WordPress Blog Post
+![Buttons on live post](screenshots/live-post.jpg)
+
+### Admin Settings — Live Preview & Display Options
+![Settings page](screenshots/settings-page.jpg)
+
+### Admin Settings — Network Toggles
+![Settings options](screenshots/settings-options.jpg)
+
+---
+
 ## Features
 
 ### 🤖 AI Summarize Row
@@ -35,12 +48,11 @@ Found at **Qai Social Share** in your WordPress dashboard sidebar:
 - Choose placement: Top of post, Before content, After content, or Shortcode only
 - Toggle Copy Link button
 - Toggle open-in-new-tab
-- **Live Preview** — see exactly what your buttons look like before saving, with instant toggles for layout changes
+- **Live Preview** — see exactly what your buttons look like before saving
 
 ### 🔁 Smart Auto-Inject
 - Buttons auto-appear on blog posts based on your placement setting
 - If you drop a shortcode into a post manually, auto-inject skips that post — **no duplicates ever**
-- Safe against AMP plugins, page builders, and related-post widgets that re-run the content filter
 
 ---
 
@@ -55,39 +67,28 @@ Found at **Qai Social Share** in your WordPress dashboard sidebar:
 
 ## Shortcodes
 
-Use these anywhere in post or page content for manual placement:
-
 | Shortcode | Output |
 |---|---|
 | `[kas_ai_buttons]` | AI Summarize row only |
 | `[kas_social_buttons]` | Social Share row only |
 | `[kas_buttons]` | Both rows together |
 
-> **Tip:** If a post contains any of these shortcodes, the plugin automatically skips auto-injecting on that post — so buttons never appear twice.
+> If a post contains any of these shortcodes, the plugin automatically skips auto-injecting — buttons never appear twice.
 
 ---
 
 ## Configuration
 
-### AI Prompt Template
-The default prompt sent to each AI tool is:
-
-```
-Analyze and summarize the key insights from {url}
-```
-
-You can edit this under **Qai Social Share → Labels & Prompt Text**. The `{url}` placeholder is required and gets replaced with the post's permalink automatically.
-
 ### Placement Options
 | Option | Description |
 |---|---|
-| Top of post (after meta) | Appears right below the post title/date — like PlayPlay.com |
+| Top of post (after meta) | Appears right below the post title/date |
 | Before content | Just above the post body |
 | After content | Below the post body |
-| Shortcode only | Turns off auto-inject entirely; use shortcodes for manual placement |
+| Shortcode only | Turns off auto-inject; use shortcodes for manual placement |
 
 ### Button Shapes
-- **Pill** — Fully rounded (default, matches the PlayPlay style)
+- **Pill** — Fully rounded (default)
 - **Rounded** — Subtle rounded corners
 - **Square** — Sharp corners
 
@@ -97,27 +98,26 @@ You can edit this under **Qai Social Share → Labels & Prompt Text**. The `{url
 
 ```
 qai-social-share/
-├── qai-social-share.php          # Main plugin bootstrap
+├── qai-social-share.php
 ├── includes/
-│   ├── class-kas-settings.php    # Admin settings page, option schema, sanitization
-│   ├── class-kas-render.php      # HTML output for AI and social button rows
-│   └── class-kas-loader.php      # Shortcodes, content hook, asset enqueuing
+│   ├── class-kas-settings.php
+│   ├── class-kas-render.php
+│   └── class-kas-loader.php
 └── assets/
-    ├── front.css                 # Front-end button styles (pill/rounded/square variants)
-    ├── front.js                  # Copy-link clipboard handler
-    ├── admin.css                 # Settings page styles
-    └── admin.js                  # Live preview instant toggles
+    ├── front.css
+    ├── front.js
+    ├── admin.css
+    └── admin.js
 ```
 
 ---
 
 ## Security
 
-- All output goes through `esc_url()`, `esc_html()`, `esc_attr()` — no raw user input ever reaches the DOM
-- Settings save uses WordPress's standard `register_setting()` + `settings_fields()` CSRF protection
-- Settings page gated behind `manage_options` capability (Administrators only)
-- Stored option data type-checked on read — malformed/corrupted data falls back to safe defaults
-- No external API calls, no tracking, no data sent anywhere except the share/summarize links the reader clicks
+- All output escaped via `esc_url()`, `esc_html()`, `esc_attr()`
+- CSRF protection via WordPress `register_setting()` + `settings_fields()`
+- Settings page gated behind `manage_options` capability
+- Stored option data type-checked against corruption
 
 ---
 
@@ -125,7 +125,6 @@ qai-social-share/
 
 - WordPress 5.8+
 - PHP 7.0+
-- No additional plugins required
 
 ---
 
@@ -133,14 +132,12 @@ qai-social-share/
 
 ### 1.1.0
 - Renamed to **Qai Social Share**
-- Settings moved to top-level dashboard menu (was under Settings submenu)
-- Fixed shortcode duplication bug — auto-inject now skips posts that already contain a shortcode
-- Added run-once guard against repeated `the_content` filter firing in same request
-- Added Live Preview block on settings page with instant JS toggles
-- Fixed fatal error in preview rendering (wrong class reference for `get_network_definitions`)
-- Fixed unstyled buttons on Pages — CSS/JS now loads on all singular content, not just Posts
-- Added type-safety guards in `get_settings()` against corrupted stored data
-- Hardened `$_GET` access per WordPress coding standards
+- Settings moved to top-level dashboard menu
+- Fixed shortcode duplication bug
+- Added Live Preview on settings page
+- Fixed fatal error in preview rendering
+- Fixed unstyled buttons on Pages
+- Added type-safety guards in `get_settings()`
 
 ### 1.0.0
 - Initial release
@@ -149,8 +146,8 @@ qai-social-share/
 
 ## License
 
-GPL v2 or later — see [LICENSE](https://www.gnu.org/licenses/gpl-2.0.html).
+GPL v2 or later.
 
 ---
 
-Built by [KahfKids](https://kahfkids.com)
+Built by Jehadul Islam
