@@ -1,5 +1,5 @@
 === Qai Social Share ===
-Contributors: jehaduliislam
+Contributors: ixehad
 Tags: social share, ai summarize, share buttons, social buttons, content sharing
 Requires at least: 5.6
 Tested up to: 6.7
