@@ -1,127 +1,132 @@
 <?php
 /**
- * Wires shortcodes, the auto-insert hook, and front-end assets together.
+ * Registers shortcodes, handles per-row auto-injection, enqueues assets.
+ *
+ * Shortcode names: [qai_ai_buttons], [qai_social_buttons], [qai_buttons]
+ *
+ * Auto-inject logic — per row, independent:
+ *   - If [qai_ai_buttons] OR [qai_buttons] found in post → skip AI auto-inject
+ *   - If [qai_social_buttons] OR [qai_buttons] found in post → skip Social auto-inject
+ *   - Each row uses its OWN position setting independently
+ *   - A static per-request flag prevents double-injection even if the_content fires more than once
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
-}
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 class KAS_Loader {
 
     private static $instance = null;
 
+    /** Tracks which post IDs have already had each row injected this request. */
+    private static $ai_injected     = array();
+    private static $social_injected = array();
+
     public static function instance() {
-        if ( null === self::$instance ) {
-            self::$instance = new self();
-        }
+        if ( null === self::$instance ) self::$instance = new self();
         return self::$instance;
     }
 
     private function __construct() {
-        add_shortcode( 'kas_ai_buttons', array( $this, 'shortcode_ai' ) );
-        add_shortcode( 'kas_social_buttons', array( $this, 'shortcode_social' ) );
-        add_shortcode( 'kas_buttons', array( $this, 'shortcode_both' ) );
+        // New shortcodes
+        add_shortcode( 'qai_ai_buttons',     array( $this, 'sc_ai' ) );
+        add_shortcode( 'qai_social_buttons', array( $this, 'sc_social' ) );
+        add_shortcode( 'qai_buttons',        array( $this, 'sc_both' ) );
 
-        add_filter( 'the_content', array( $this, 'maybe_inject' ) );
+        add_filter( 'the_content',       array( $this, 'maybe_inject' ) );
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_front_assets' ) );
     }
 
-    public function shortcode_ai() {
-        return KAS_Render::ai_row();
-    }
+    /* -----------------------------------------------------------------------
+     * Shortcode callbacks
+     * -------------------------------------------------------------------- */
 
-    public function shortcode_social() {
-        return KAS_Render::social_row();
-    }
+    public function sc_ai()     { return KAS_Render::ai_row(); }
+    public function sc_social() { return KAS_Render::social_row(); }
+    public function sc_both()   { return KAS_Render::both_rows(); }
 
-    public function shortcode_both() {
-        return KAS_Render::both_rows();
-    }
+    /* -----------------------------------------------------------------------
+     * Per-row auto-inject
+     * -------------------------------------------------------------------- */
 
-    /**
-     * Tracks which post IDs have already had rows injected during this
-     * single page request, so a theme or plugin calling apply_filters(
-     * 'the_content', ... ) more than once on the same post (common with
-     * AMP plugins, REST API rendering, some page builders, related-post
-     * widgets that re-run the loop) can never produce duplicate rows.
-     */
-    private static $injected_post_ids = array();
-
-    /**
-     * Auto-inject the rows into post content based on the configured position.
-     * Skipped if:
-     *  - position = shortcode_only
-     *  - this exact post was already injected once in this request
-     *  - the post body already contains one of our shortcodes (the user has
-     *    manually placed it, so auto-inserting too would duplicate it)
-     *  - we're outside the main singular post view
-     */
     public function maybe_inject( $content ) {
         if ( ! is_singular( 'post' ) || ! in_the_loop() || ! is_main_query() ) {
             return $content;
         }
 
-        $post_id = get_the_ID();
-        if ( ! $post_id || in_array( $post_id, self::$injected_post_ids, true ) ) {
-            return $content;
-        }
+        $post_id  = get_the_ID();
+        if ( ! $post_id ) return $content;
 
         $settings = KAS_Settings::instance()->get_settings();
-        $position = $settings['position'];
 
-        if ( 'shortcode_only' === $position ) {
+        // --- Determine which rows should auto-inject for this post ---
+        $has_ai_sc     = has_shortcode( $content, 'qai_ai_buttons' )
+                      || has_shortcode( $content, 'qai_buttons' );
+        $has_social_sc = has_shortcode( $content, 'qai_social_buttons' )
+                      || has_shortcode( $content, 'qai_buttons' );
+
+        // Row is eligible for auto-inject only if:
+        //  1. Enabled in settings
+        //  2. Position is not shortcode_only
+        //  3. No matching shortcode already in post content
+        //  4. Not already injected in this request for this post
+        $inject_ai = ! empty( $settings['ai_enabled'] )
+            && 'shortcode_only' !== $settings['ai_position']
+            && ! $has_ai_sc
+            && ! in_array( $post_id, self::$ai_injected, true );
+
+        $inject_social = ! empty( $settings['social_enabled'] )
+            && 'shortcode_only' !== $settings['social_position']
+            && ! $has_social_sc
+            && ! in_array( $post_id, self::$social_injected, true );
+
+        // Mark immediately (before rendering) so re-entrant calls can't double-inject
+        if ( $inject_ai )     self::$ai_injected[]     = $post_id;
+        if ( $inject_social ) self::$social_injected[]  = $post_id;
+
+        if ( ! $inject_ai && ! $inject_social ) {
             return $content;
         }
 
-        // If the user already dropped a shortcode into this post, respect that
-        // placement and don't also auto-inject — otherwise the buttons show twice.
-        if ( $this->content_has_shortcode( $content ) ) {
-            self::$injected_post_ids[] = $post_id;
-            return $content;
+        // Build each row and inject at its own configured position
+        $ai_row     = $inject_ai     ? KAS_Render::ai_row( $post_id )     : '';
+        $social_row = $inject_social ? KAS_Render::social_row( $post_id ) : '';
+
+        // Determine splice positions
+        $ai_pos     = $settings['ai_position'];     // before_content | after_meta | after_content
+        $social_pos = $settings['social_position'];
+
+        // Group rows by position so we don't touch $content more than needed
+        $prepend = '';  // before_content / after_meta go here (top of content)
+        $append  = '';  // after_content goes here (bottom of content)
+
+        $top_positions = array( 'before_content', 'after_meta' );
+
+        if ( $inject_ai ) {
+            if ( in_array( $ai_pos, $top_positions, true ) ) {
+                $prepend .= $ai_row;
+            } else {
+                $append .= $ai_row;
+            }
         }
 
-        $rows = KAS_Render::both_rows( $post_id );
-
-        // Mark this post handled now, regardless of outcome, so a second firing
-        // of the_content within the same request (AMP, related-post widgets,
-        // some page builders) never repeats this work or risks duplicate output.
-        self::$injected_post_ids[] = $post_id;
-
-        if ( '' === trim( $rows ) ) {
-            return $content;
+        if ( $inject_social ) {
+            if ( in_array( $social_pos, $top_positions, true ) ) {
+                $prepend .= $social_row;
+            } else {
+                $append .= $social_row;
+            }
         }
 
-        if ( 'before_content' === $position || 'after_meta' === $position ) {
-            // "after_meta" (right under title/date) requires a template edit for pixel-perfect
-            // placement above the content; as a content filter we place it at the top of the
-            // content area, which visually sits directly under the post meta in most themes.
-            return $rows . $content;
-        }
-
-        // after_content
-        return $content . $rows;
+        return $prepend . $content . $append;
     }
 
-    /**
-     * Checks the raw (pre-shortcode-rendering) post content for any of this
-     * plugin's shortcodes, so auto-inject can step aside if found.
-     */
-    private function content_has_shortcode( $content ) {
-        return has_shortcode( $content, 'kas_ai_buttons' )
-            || has_shortcode( $content, 'kas_social_buttons' )
-            || has_shortcode( $content, 'kas_buttons' );
-    }
+    /* -----------------------------------------------------------------------
+     * Front-end assets
+     * -------------------------------------------------------------------- */
 
     public function enqueue_front_assets() {
-        // Always load on Posts (where auto-inject normally fires), and on any
-        // other singular content (Pages, custom post types) since the
-        // shortcodes work everywhere — without this, a shortcode pasted into
-        // a Page would render as unstyled raw links.
-        if ( ! is_singular() ) {
-            return;
-        }
-        wp_enqueue_style( 'kas-front', KAS_URL . 'assets/front.css', array(), KAS_VERSION );
-        wp_enqueue_script( 'kas-front', KAS_URL . 'assets/front.js', array(), KAS_VERSION, true );
+        if ( ! is_singular() ) return;
+        wp_enqueue_style(  'kas-front', KAS_URL . 'assets/front.css', array(), KAS_VERSION );
+        wp_enqueue_script( 'kas-front', KAS_URL . 'assets/front.js',  array(), KAS_VERSION, true );
     }
 }
