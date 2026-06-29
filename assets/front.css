@@ -1,73 +1,115 @@
+/* Qai Social Share — front-end styles */
+
 .kas-row {
     margin: 20px 0;
 }
 
 .kas-row-label {
     display: block;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: #6b7280;
+    color: #94a3b8;
     margin-bottom: 10px;
 }
 
 .kas-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
+    align-items: center;
 }
 
+/* Base button */
 .kas-btn {
     display: inline-flex;
     align-items: center;
-    padding: 9px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.2;
-    text-decoration: none;
+    justify-content: center;
+    gap: 6px;
     color: #fff;
+    text-decoration: none;
     border: none;
     cursor: pointer;
+    font-weight: 600;
+    line-height: 1;
     transition: opacity 0.15s ease, transform 0.1s ease;
+    white-space: nowrap;
 }
 
-.kas-btn:hover {
-    opacity: 0.85;
+.kas-btn:hover  { opacity: 0.85; color: #fff; text-decoration: none; }
+.kas-btn:active { transform: scale(0.96); }
+
+/* Icon sizing inside buttons */
+.kas-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-.kas-btn:active {
-    transform: scale(0.97);
+.kas-btn-icon svg {
+    display: block;
 }
 
-/* Button shape variants */
-.kas-style-pill .kas-btn {
-    border-radius: 999px;
+/* ── Style: text only ─────────────────────────────────────────────────── */
+.kas-btn-style-text {
+    padding: 8px 16px;
+    font-size: 13px;
 }
 
-.kas-style-rounded .kas-btn {
-    border-radius: 8px;
+.kas-btn-style-text .kas-btn-icon { display: none; }
+
+/* ── Style: icon only ─────────────────────────────────────────────────── */
+.kas-btn-style-icon {
+    padding: 9px;
+    font-size: 0; /* hide any accidental text */
 }
 
-.kas-style-square .kas-btn {
-    border-radius: 0;
+.kas-btn-style-icon .kas-btn-icon { width: 18px; height: 18px; }
+.kas-btn-style-icon .kas-btn-icon svg { width: 18px; height: 18px; }
+.kas-btn-style-icon .kas-btn-label { display: none; }
+
+/* ── Style: icon + text ───────────────────────────────────────────────── */
+.kas-btn-style-icon_text {
+    padding: 8px 14px;
+    font-size: 13px;
 }
 
-/* Copy link button keeps a neutral color regardless of theme */
+.kas-btn-style-icon_text .kas-btn-icon { width: 16px; height: 16px; }
+.kas-btn-style-icon_text .kas-btn-icon svg { width: 16px; height: 16px; }
+
+/* ── Shapes ───────────────────────────────────────────────────────────── */
+.kas-shape-pill    .kas-btn { border-radius: 999px; }
+.kas-shape-rounded .kas-btn { border-radius: 6px; }
+.kas-shape-square  .kas-btn { border-radius: 0; }
+
+/* Apply shape to rows directly so shortcode-placed rows also pick it up */
+.kas-row.kas-shape-pill    .kas-btn { border-radius: 999px; }
+.kas-row.kas-shape-rounded .kas-btn { border-radius: 6px; }
+.kas-row.kas-shape-square  .kas-btn { border-radius: 0; }
+
+/* ── Copy link button ─────────────────────────────────────────────────── */
 .kas-btn-copy {
-    background: #374151;
+    background: #374151 !important;
 }
 
 .kas-btn-copy.kas-copied {
-    background: #16a34a;
+    background: #16a34a !important;
 }
 
-@media (max-width: 480px) {
-    .kas-buttons {
-        gap: 8px;
-    }
-    .kas-btn {
-        padding: 8px 14px;
-        font-size: 13px;
-    }
+/* ── Admin network icon preview (settings page only) ─────────────────── */
+.kas-network-icon svg {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media ( max-width: 480px ) {
+    .kas-buttons { gap: 6px; }
+
+    .kas-btn-style-text     { padding: 7px 12px; font-size: 12px; }
+    .kas-btn-style-icon     { padding: 8px; }
+    .kas-btn-style-icon_text { padding: 7px 11px; font-size: 12px; }
 }
