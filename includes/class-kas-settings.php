@@ -51,9 +51,12 @@ class KAS_Settings {
      * -------------------------------------------------------------------- */
 
     public static function defaults() {
-        $networks = array();
+        // Default ON: ChatGPT, Claude, Perplexity, Google (AI) + Facebook, X, WhatsApp, LinkedIn (Social)
+        // Everything else defaults to OFF so new installs aren't overwhelming
+        $default_on = array( 'chatgpt', 'claude', 'perplexity', 'google', 'facebook', 'twitter', 'whatsapp', 'linkedin' );
+        $networks   = array();
         foreach ( self::get_network_definitions() as $key => $def ) {
-            $networks[ $key ] = 1;
+            $networks[ $key ] = in_array( $key, $default_on, true ) ? 1 : 0;
         }
         return array(
             'enabled_networks'     => $networks,
@@ -297,7 +300,7 @@ class KAS_Settings {
             <div id="kas-preview-ai"><?php
                 $preview_settings = $s;
                 $preview_settings['social_enabled'] = 0; // AI tab: show AI row only
-                echo wp_kses_post( KAS_Render::preview_rows( $preview_settings ) );
+                echo wp_kses( KAS_Render::preview_rows( $preview_settings ), KAS_Render::preview_kses() );
             ?></div>
         </div>
 
@@ -444,7 +447,7 @@ class KAS_Settings {
             <div id="kas-preview-social"><?php
                 $preview_settings = $s;
                 $preview_settings['ai_enabled'] = 0; // Social tab: show social row only
-                echo wp_kses_post( KAS_Render::preview_rows( $preview_settings ) );
+                echo wp_kses( KAS_Render::preview_rows( $preview_settings ), KAS_Render::preview_kses() );
             ?></div>
         </div>
 
