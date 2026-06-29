@@ -36,6 +36,22 @@ class KAS_Render {
         );
     }
 
+    /**
+     * Full allowlist for the admin live-preview output.
+     * wp_kses_post() strips SVG, so we need our own allowlist that
+     * covers every tag/attribute the preview rows can produce.
+     */
+    public static function preview_kses() {
+        $base = array(
+            'div'    => array( 'class' => true, 'id' => true, 'style' => true ),
+            'span'   => array( 'class' => true, 'style' => true, 'aria-hidden' => true ),
+            'a'      => array( 'href' => true, 'class' => true, 'style' => true, 'target' => true, 'rel' => true, 'aria-label' => true ),
+            'button' => array( 'type' => true, 'class' => true, 'style' => true, 'disabled' => true, 'title' => true, 'data-kas-copy-url' => true, 'aria-label' => true ),
+            'p'      => array( 'class' => true, 'style' => true ),
+        );
+        return array_merge( $base, self::svg_kses() );
+    }
+
     private static function button_html( $href, $label, $icon_svg, $style, $color, $target, $extra_class = '' ) {
         $btn_class = 'kas-btn kas-btn-style-' . esc_attr( $style );
         if ( $extra_class ) $btn_class .= ' ' . $extra_class;
