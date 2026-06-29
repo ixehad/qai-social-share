@@ -24,13 +24,25 @@ class KAS_Render {
      * Single button HTML
      * -------------------------------------------------------------------- */
 
+    /**
+     * Allowed HTML tags/attributes for inline SVG icons.
+     * Icons come from our own hardcoded definitions, never user input,
+     * but we still pass through wp_kses() to satisfy PHPCS and WP.org review.
+     */
+    private static function svg_kses() {
+        return array(
+            'svg'  => array( 'viewbox' => true, 'fill' => true, 'xmlns' => true, 'aria-hidden' => true, 'width' => true, 'height' => true ),
+            'path' => array( 'd' => true, 'fill' => true ),
+        );
+    }
+
     private static function button_html( $href, $label, $icon_svg, $style, $color, $target, $extra_class = '' ) {
         $btn_class = 'kas-btn kas-btn-style-' . esc_attr( $style );
         if ( $extra_class ) $btn_class .= ' ' . $extra_class;
 
         $inner = '';
         if ( 'icon' === $style || 'icon_text' === $style ) {
-            $inner .= '<span class="kas-btn-icon" aria-hidden="true">' . $icon_svg . '</span>';
+            $inner .= '<span class="kas-btn-icon" aria-hidden="true">' . wp_kses( $icon_svg, self::svg_kses() ) . '</span>';
         }
         if ( 'text' === $style || 'icon_text' === $style ) {
             $inner .= '<span class="kas-btn-label">' . esc_html( $label ) . '</span>';
@@ -117,9 +129,8 @@ class KAS_Render {
         }
 
         if ( ! empty( $settings['show_copy_link'] ) ) {
-            $copy_icon = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
-            $copy_label = 'icon' === $style ? '' : 'Copy Link';
-            $icon_part  = ( 'icon' === $style || 'icon_text' === $style ) ? '<span class="kas-btn-icon" aria-hidden="true">' . $copy_icon . '</span>' : '';
+            $copy_icon  = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+            $icon_part  = ( 'icon' === $style || 'icon_text' === $style ) ? '<span class="kas-btn-icon" aria-hidden="true">' . wp_kses( $copy_icon, self::svg_kses() ) . '</span>' : '';
             $text_part  = ( 'text' === $style || 'icon_text' === $style ) ? '<span class="kas-btn-label">Copy Link</span>' : '';
             $buttons .= sprintf(
                 '<button type="button" class="kas-btn kas-btn-style-%s %s kas-btn-copy" data-kas-copy-url="%s" aria-label="Copy link to this post">%s%s</button>',
@@ -191,7 +202,7 @@ class KAS_Render {
             }
             if ( ! empty( $settings['show_copy_link'] ) ) {
                 $copy_icon = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
-                $icon_part = ( 'icon' === $style || 'icon_text' === $style ) ? '<span class="kas-btn-icon">' . $copy_icon . '</span>' : '';
+                $icon_part = ( 'icon' === $style || 'icon_text' === $style ) ? '<span class="kas-btn-icon">' . wp_kses( $copy_icon, self::svg_kses() ) . '</span>' : '';
                 $text_part = ( 'text' === $style || 'icon_text' === $style ) ? '<span class="kas-btn-label">Copy Link</span>' : '';
                 $buttons .= sprintf(
                     '<button type="button" class="kas-btn kas-btn-style-%s %s kas-btn-copy" disabled title="Preview only">%s%s</button>',
