@@ -1,12 +1,4 @@
-.kas-settings-wrap .title {
-    margin-top: 28px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #dcdcde;
-}
-
-.kas-settings-wrap .form-table th {
-    width: 240px;
-}
+/* Qai Social Share — admin styles */
 
 .kas-settings-wrap h1 {
     display: flex;
@@ -15,26 +7,113 @@
 }
 
 .kas-title-icon {
-    font-size: 28px;
-    width: 28px;
-    height: 28px;
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
     color: #2271b1;
 }
 
+/* ── Tabs ─────────────────────────────────────────────────────────────── */
+.kas-tabs {
+    margin: 16px 0 0;
+}
+
+/* ── Section headings ─────────────────────────────────────────────────── */
+.kas-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d2327;
+    border-bottom: 1px solid #dcdcde;
+    padding-bottom: 6px;
+    margin: 24px 0 4px;
+}
+
+/* ── Live preview box ─────────────────────────────────────────────────── */
 .kas-preview-box {
     background: #fff;
     border: 1px solid #dcdcde;
-    border-radius: 6px;
+    border-radius: 4px;
     padding: 16px 20px 20px;
-    margin: 16px 0 24px;
-    max-width: 800px;
+    margin: 16px 0 8px;
+    max-width: 860px;
 }
 
-.kas-preview-box .kas-row {
-    margin: 14px 0 0;
+.kas-preview-box .kas-row { margin: 10px 0 0; }
+
+/* ── Warning notice ───────────────────────────────────────────────────── */
+.kas-notice {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    max-width: 600px;
 }
 
-.kas-preview-box .kas-btn-copy {
-    opacity: 0.6;
-    cursor: not-allowed;
+.kas-notice-warn {
+    background: #fff8e5;
+    border-left: 4px solid #dba617;
+    color: #4a3800;
+}
+
+.kas-notice-warn code {
+    background: #fef3cd;
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+/* ── Shortcode reference box ──────────────────────────────────────────── */
+.kas-shortcode-box {
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin: 24px 0 16px;
+    max-width: 600px;
+}
+
+.kas-shortcode-box h3 {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.kas-shortcode-box code {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 3px;
+    padding: 4px 10px;
+    font-size: 13px;
+    margin: 4px 0 8px;
+}
+
+.kas-shortcode-box p.description { margin-top: 4px; }
+
+/* ── Toggle label ─────────────────────────────────────────────────────── */
+.kas-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+/* ── Form table ───────────────────────────────────────────────────────── */
+.kas-settings-wrap .form-table th { width: 220px; }
+.kas-settings-wrap .form-table td { padding: 10px 10px 10px 0; }
+
+/* ── Copy link preview dim ────────────────────────────────────────────── */
+.kas-preview-box .kas-btn-copy[disabled] {
+    opacity: 0.55;
+    cursor: default;
+}
+
+/* ── Network icon in social table ─────────────────────────────────────── */
+.kas-network-icon {
+    display: inline-flex;
+    vertical-align: middle;
+}
+.kas-network-icon svg {
+    width: 18px;
+    height: 18px;
 }
