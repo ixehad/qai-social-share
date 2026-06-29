@@ -2,7 +2,7 @@
 Contributors: ixehad
 Tags: social share, ai summarize, share buttons, social buttons, content sharing
 Requires at least: 5.6
-Tested up to: 6.7
+Tested up to: 7.0
 Stable tag: 1.2.0
 Requires PHP: 7.2
 License: GPLv2 or later
