@@ -1,19 +1,24 @@
 <?php
 /**
- * Plugin Name: Qai Social Share
- * Plugin URI:  https://kahfkids.com
- * Description: Adds "Summarize with AI" buttons (ChatGPT, Claude, Perplexity, Grok, Google AI Mode) and social share buttons (Facebook, X, WhatsApp, LinkedIn, Telegram, Pinterest) to blog posts. Fully configurable from the Qai Social Share dashboard menu.
- * Version:     1.1.0
- * Author:      KahfKids
- * Text Domain: qai-social-share
- * License:     GPL v2 or later
+ * Plugin Name:       Qai Social Share
+ * Plugin URI:        https://github.com/ixehad/qai-social-share
+ * Description:       Adds "Summarize with AI" buttons (ChatGPT, Claude, Perplexity, Grok, Google) and social share buttons (Facebook, X, WhatsApp, LinkedIn, Telegram, Pinterest) to blog posts. Fully configurable — no coding required.
+ * Version:           1.2.0
+ * Requires at least: 5.6
+ * Requires PHP:      7.2
+ * Author:            Jehadul Islam
+ * Author URI:        https://github.com/ixehad
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       qai-social-share
+ * Domain Path:       /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit; // No direct access.
 }
 
-define( 'KAS_VERSION', '1.1.0' );
+define( 'KAS_VERSION', '1.2.0' );
 define( 'KAS_PATH', plugin_dir_path( __FILE__ ) );
 define( 'KAS_URL', plugin_dir_url( __FILE__ ) );
 
