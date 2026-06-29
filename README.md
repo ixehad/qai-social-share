@@ -2,20 +2,20 @@
 
 A WordPress plugin that adds **AI Summarize** buttons and **Social Share** buttons to your blog posts — fully configurable from the WordPress dashboard, no theme editing required.
 
-![Plugin Version](https://img.shields.io/badge/version-1.1.0-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.0%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0-green)
+![Plugin Version](https://img.shields.io/badge/version-1.2.0-blue) ![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-21759b) ![PHP](https://img.shields.io/badge/PHP-7.0%2B-777bb4) ![License](https://img.shields.io/badge/license-GPL--2.0-green)
 
 ---
 
 ## Screenshots
 
-### Live Post — Buttons on a Real WordPress Blog Post
-![Buttons on live post](screenshots/live-post.jpg)
+### AI Summarize buttons on a live post
+![AI Summarize on live post](screenshots/screenshot-1.png)
 
-### Admin Settings — Live Preview & Display Options
-![Settings page](screenshots/settings-page.jpg)
+### AI Summarize settings page
+![AI Summarize settings](screenshots/screenshot-2.png)
 
-### Admin Settings — Network Toggles
-![Settings options](screenshots/settings-options.jpg)
+### Social Share settings page
+![Social Share settings](screenshots/screenshot-3.png)
 
 ---
 
@@ -23,45 +23,37 @@ A WordPress plugin that adds **AI Summarize** buttons and **Social Share** butto
 
 ### 🤖 AI Summarize Row
 Lets readers instantly summarize your post in their preferred AI tool:
-- ChatGPT
-- Claude
-- Perplexity
-- Grok
-- Google AI Mode
+- ChatGPT, Claude, Perplexity, Grok, Google AI Mode
 
 ### 📣 Social Share Row
 One-click sharing to all major platforms:
-- Facebook
-- X (Twitter)
-- WhatsApp
-- LinkedIn
-- Telegram
-- Pinterest
-- Copy Link (clipboard button with "Copied!" feedback)
+- Facebook, X (Twitter), WhatsApp, LinkedIn, Telegram, Pinterest
+- Copy Link button (copies post URL to clipboard)
 
-### ⚙️ Full Admin Settings Page
+### ⚙️ Two Separate Settings Tabs
 Found at **Qai Social Share** in your WordPress dashboard sidebar:
-- Toggle any network on/off individually
-- Edit the AI prompt template (e.g. "Summarize the key insights from {url}")
-- Edit row labels ("Summarize with", "Share this article")
-- Choose button shape: Pill / Rounded / Square
-- Choose placement: Top of post, Before content, After content, or Shortcode only
-- Toggle Copy Link button
-- Toggle open-in-new-tab
-- **Live Preview** — see exactly what your buttons look like before saving
 
-### 🔁 Smart Auto-Inject
-- Buttons auto-appear on blog posts based on your placement setting
-- If you drop a shortcode into a post manually, auto-inject skips that post — **no duplicates ever**
+**AI Summarize tab:**
+- Enable/disable the AI row independently
+- Position: Before content, After title/meta, After content, or Shortcode only
+- Button style: Text only / Icon only / Icon + Text
+- Button shape: Pill / Rounded / Square
+- Row label (editable)
+- AI prompt template (editable, must include `{url}`)
+- Toggle individual AI tools on/off
 
----
+**Social Share tab:**
+- Enable/disable the social row independently
+- Position: independent from AI row
+- Button style: Text only / Icon only / Icon + Text
+- Row label (editable)
+- Copy Link button toggle
+- Toggle individual networks on/off
 
-## Installation
-
-1. Download the latest `.zip` from the [Releases](https://github.com/ixehad/qai-social-share/releases) page
-2. In WordPress admin, go to **Plugins → Add New → Upload Plugin**
-3. Upload the zip and click **Install Now → Activate**
-4. Go to **Qai Social Share** in the left sidebar to configure
+### 🔁 Smart Shortcode Detection
+- Buttons auto-insert based on your position setting
+- If a post already contains `[qai_ai_buttons]`, auto-injection of the AI row is skipped for that post — no duplicates
+- Same logic applies per-row independently (social shortcode only suppresses social auto-inject)
 
 ---
 
@@ -69,28 +61,20 @@ Found at **Qai Social Share** in your WordPress dashboard sidebar:
 
 | Shortcode | Output |
 |---|---|
-| `[kas_ai_buttons]` | AI Summarize row only |
-| `[kas_social_buttons]` | Social Share row only |
-| `[kas_buttons]` | Both rows together |
+| `[qai_ai_buttons]` | AI Summarize row only |
+| `[qai_social_buttons]` | Social Share row only |
+| `[qai_buttons]` | Both rows together |
 
-> If a post contains any of these shortcodes, the plugin automatically skips auto-injecting — buttons never appear twice.
+> **⚠️ Avoid duplicates:** If a row is set to auto-insert, do not also paste its shortcode into the same post. Pick one method per row per post.
 
 ---
 
-## Configuration
+## Installation
 
-### Placement Options
-| Option | Description |
-|---|---|
-| Top of post (after meta) | Appears right below the post title/date |
-| Before content | Just above the post body |
-| After content | Below the post body |
-| Shortcode only | Turns off auto-inject; use shortcodes for manual placement |
-
-### Button Shapes
-- **Pill** — Fully rounded (default)
-- **Rounded** — Subtle rounded corners
-- **Square** — Sharp corners
+1. Download the latest `.zip` from [Releases](https://github.com/ixehad/qai-social-share/releases)
+2. In WordPress admin → **Plugins → Add New → Upload Plugin**
+3. Upload the zip → **Install Now → Activate**
+4. Go to **Qai Social Share** in the left sidebar
 
 ---
 
@@ -98,26 +82,53 @@ Found at **Qai Social Share** in your WordPress dashboard sidebar:
 
 ```
 qai-social-share/
-├── qai-social-share.php
+├── qai-social-share.php          # Main plugin bootstrap
+├── readme.txt                    # WordPress.org readme
+├── assets/                       # WP.org banner + icon assets
+│   ├── banner-772x250.png
+│   ├── banner-1544x500.png
+│   ├── icon-128x128.png
+│   └── icon-256x256.png
 ├── includes/
-│   ├── class-kas-settings.php
-│   ├── class-kas-render.php
-│   └── class-kas-loader.php
-└── assets/
-    ├── front.css
-    ├── front.js
-    ├── admin.css
-    └── admin.js
+│   ├── class-kas-settings.php    # Two-tab admin settings page
+│   ├── class-kas-render.php      # Button HTML output (text/icon/icon+text)
+│   └── class-kas-loader.php      # Shortcodes + per-row content injection
+└── assets/ (plugin runtime)
+    ├── front.css                 # Front-end button styles
+    ├── front.js                  # Copy-link clipboard handler
+    ├── admin.css                 # Settings page styles
+    └── admin.js                  # Live preview + enable/disable dimming
 ```
+
+---
+
+## External Services
+
+This plugin redirects readers to third-party services when they click a button. No data is sent automatically — only on explicit user click.
+
+| Service | URL | Terms |
+|---|---|---|
+| ChatGPT | chatgpt.com | [Terms](https://openai.com/policies/terms-of-use) |
+| Claude | claude.ai | [Terms](https://www.anthropic.com/legal/consumer-terms) |
+| Perplexity | perplexity.ai | [Terms](https://www.perplexity.ai/hub/legal/terms-of-service) |
+| Grok | x.com/i/grok | [Terms](https://x.com/en/tos) |
+| Google | google.com | [Terms](https://policies.google.com/terms) |
+| Facebook | facebook.com | [Terms](https://www.facebook.com/terms.php) |
+| X (Twitter) | twitter.com | [Terms](https://twitter.com/tos) |
+| WhatsApp | api.whatsapp.com | [Terms](https://www.whatsapp.com/legal/terms-of-service) |
+| LinkedIn | linkedin.com | [Terms](https://www.linkedin.com/legal/user-agreement) |
+| Telegram | t.me | [Terms](https://telegram.org/tos) |
+| Pinterest | pinterest.com | [Terms](https://policy.pinterest.com/terms-of-service) |
 
 ---
 
 ## Security
 
 - All output escaped via `esc_url()`, `esc_html()`, `esc_attr()`
-- CSRF protection via WordPress `register_setting()` + `settings_fields()`
+- CSRF protection via `register_setting()` + `settings_fields()`
 - Settings page gated behind `manage_options` capability
-- Stored option data type-checked against corruption
+- No external requests made by the plugin itself
+- No user data collected or transmitted
 
 ---
 
@@ -130,14 +141,21 @@ qai-social-share/
 
 ## Changelog
 
+### 1.2.0
+- Two separate admin tabs: AI Summarize and Social Share
+- Independent position selector per row
+- Three button display styles: Text only / Icon only / Icon + Text
+- Inline SVG icons for all networks and AI tools
+- Fixed shortcode duplication bug (per-row detection)
+- Renamed shortcodes from `[kas_*]` to `[qai_*]`
+- Live preview on each settings tab
+- Duplicate-warning notices on position selectors
+
 ### 1.1.0
-- Renamed to **Qai Social Share**
-- Settings moved to top-level dashboard menu
-- Fixed shortcode duplication bug
-- Added Live Preview on settings page
-- Fixed fatal error in preview rendering
-- Fixed unstyled buttons on Pages
-- Added type-safety guards in `get_settings()`
+- Renamed to Qai Social Share
+- Top-level dashboard menu
+- Live preview on settings page
+- Various bug fixes
 
 ### 1.0.0
 - Initial release
@@ -146,7 +164,7 @@ qai-social-share/
 
 ## License
 
-GPL v2 or later.
+GPL v2 or later
 
 ---
 
