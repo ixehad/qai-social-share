@@ -205,7 +205,9 @@ class KAS_Settings {
      * -------------------------------------------------------------------- */
 
     private function page_header( $active_tab ) {
-        $saved = isset( $_GET['settings-updated'] ) && 'true' === sanitize_text_field( wp_unslash( $_GET['settings-updated'] ) );
+        // settings_errors() is the WP-approved way to show save confirmations
+        // after options.php processes the form. No direct $_GET access needed.
+        $saved = isset( $_GET['settings-updated'] ) && '1' === $_GET['settings-updated']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only display flag set by WP options.php after nonce-verified save
         ?>
         <div class="wrap kas-settings-wrap">
         <h1><span class="dashicons dashicons-share kas-title-icon"></span> Qai Social Share</h1>
@@ -295,7 +297,7 @@ class KAS_Settings {
             <div id="kas-preview-ai"><?php
                 $preview_settings = $s;
                 $preview_settings['social_enabled'] = 0; // AI tab: show AI row only
-                echo KAS_Render::preview_rows( $preview_settings );
+                echo wp_kses_post( KAS_Render::preview_rows( $preview_settings ) );
             ?></div>
         </div>
 
@@ -442,7 +444,7 @@ class KAS_Settings {
             <div id="kas-preview-social"><?php
                 $preview_settings = $s;
                 $preview_settings['ai_enabled'] = 0; // Social tab: show social row only
-                echo KAS_Render::preview_rows( $preview_settings );
+                echo wp_kses_post( KAS_Render::preview_rows( $preview_settings ) );
             ?></div>
         </div>
 
@@ -516,12 +518,17 @@ class KAS_Settings {
                 <p class="description" style="margin-bottom:12px;">Choose which platforms to show. Uncheck any that don't suit your audience.</p>
                 <table class="form-table" role="presentation">
                     <?php foreach ( $networks as $key => $def ) :
-                        if ( 'social' !== $def['group'] ) continue; ?>
+                        if ( 'social' !== $def['group'] ) continue;
+                        $allowed_svg = array(
+                            'svg'  => array( 'viewbox' => true, 'fill' => true, 'xmlns' => true, 'aria-hidden' => true ),
+                            'path' => array( 'd' => true ),
+                        );
+                        ?>
                     <tr>
                         <th>
                             <span style="display:inline-flex;align-items:center;gap:6px;">
                                 <span class="kas-network-icon" style="color:<?php echo esc_attr( $def['color'] ); ?>;width:18px;height:18px;display:inline-flex;">
-                                    <?php echo $def['icon']; ?>
+                                    <?php echo wp_kses( $def['icon'], $allowed_svg ); ?>
                                 </span>
                                 <?php echo esc_html( $def['label'] ); ?>
                             </span>
